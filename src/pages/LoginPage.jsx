@@ -1,102 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/ui/Button";
 import InputField from "../components/ui/InputField";
 import PasswordInput from "../components/ui/PasswordInput";
 import Divider from "../components/ui/Divider";
 import SocialButton from "../components/ui/SocialButton";
+import { useLoginForm } from "../hooks/useLoginForm";
+import { loginData } from "../data/loginData";
 
 const LoginPage = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    rememberMe: false,
-  });
-  const [errors, setErrors] = useState({});
-  const [generalError, setGeneralError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleChange = (e) => {
-    const { id, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [id]: type === "checkbox" ? checked : value,
-    }));
-    if (errors[id]) {
-      setErrors((prev) => ({ ...prev, [id]: "" }));
-    }
-    if (generalError) setGeneralError("");
-  };
-
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.email) {
-      newErrors.email = "البريد الإلكتروني مطلوب";
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = "البريد الإلكتروني غير صالح";
-    }
-    if (!formData.password) {
-      newErrors.password = "كلمة المرور مطلوبة";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const loginApiCall = async (email, password, rememberMe) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email === "test@example.com" && password === "123456") {
-          resolve({ success: true });
-        } else {
-          reject({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
-        }
-      }, 1500);
-    });
-  };
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-    setIsLoading(true);
-    setGeneralError("");
-    try {
-      await loginApiCall(formData.email, formData.password, formData.rememberMe);
-      console.log("بيانات تسجيل الدخول:", formData);
-      alert("تم تسجيل الدخول بنجاح (محاكاة)");
-    } catch (error) {
-      setGeneralError(error.message || "حدث خطأ أثناء تسجيل الدخول، حاول مرة أخرى");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = () => {
-    console.log("تسجيل الدخول عبر Google");
-  };
+  const {
+    formData,
+    errors,
+    generalError,
+    isLoading,
+    handleChange,
+    handleSubmit,
+    handleGoogleLogin,
+  } = useLoginForm();
 
   return (
     <div className="min-h-screen flex items-center justify-center p-5 md:p-8 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
       <div className="w-full max-w-[448px] bg-white rounded-3xl shadow-2xl shadow-indigo-100/50 overflow-hidden transition-all duration-300 hover:shadow-indigo-200/40">
-        {/* Header مع شعار ونص ترحيبي - تصميم أنيق مع مسافات محسنة */}
+        {/* Header */}
         <div className="px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white to-indigo-50/20">
           <div className="flex justify-center mb-5">
             <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl mx-auto mb-4 my-20 flex items-center justify-center shadow-md shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-300">
-         <img src="/src/assets/logo.png" alt="EduFuture AI Logo" className="w-12 h-12" />
-        </div>
+              <img src={loginData.logo.src} alt={loginData.logo.alt} className="w-12 h-12" />
+            </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            EduFuture AI
+            {loginData.title}
           </h1>
           <p className="text-gray-500 text-sm mt-2 font-medium">
-            مرحباً بعودتك! سجل الدخول للوصول إلى منصتك التعليمية.
+            {loginData.subtitle}
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="px-8 pt-6 pb-2 space-y-6">
-          {/* رسالة خطأ عامة محسنة */}
+        <form onSubmit={handleSubmit} className="px-8 pt-6 pb-2 space-y-6">
           {generalError && (
             <div className="flex items-center gap-3 bg-red-50 text-red-700 p-3 rounded-xl text-sm border-r-4 border-red-500 shadow-sm">
               <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -107,29 +49,29 @@ const LoginPage = () => {
           )}
 
           <InputField
-            id="email"
-            label="البريد الإلكتروني"
-            type="email"
-            placeholder="name@company.com"
+            id={loginData.fields.email.id}
+            label={loginData.fields.email.label}
+            type={loginData.fields.email.type}
+            placeholder={loginData.fields.email.placeholder}
             value={formData.email}
             onChange={handleChange}
             error={errors.email}
             disabled={isLoading}
             required
-            autoComplete="email"
+            autoComplete={loginData.fields.email.autoComplete}
             className="transition-all duration-200 focus:scale-[1.01]"
           />
 
           <div className="space-y-2">
             <PasswordInput
-              id="password"
-              label="كلمة المرور"
-              placeholder="••••••••"
+              id={loginData.fields.password.id}
+              label={loginData.fields.password.label}
+              placeholder={loginData.fields.password.placeholder}
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
               disabled={isLoading}
-              autoComplete="current-password"
+              autoComplete={loginData.fields.password.autoComplete}
             />
             <div className="flex justify-between items-center mt-2">
               <label className="flex items-center gap-2 cursor-pointer group">
@@ -142,11 +84,11 @@ const LoginPage = () => {
                   disabled={isLoading}
                 />
                 <span className="text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">
-                  تذكرني
+                  {loginData.fields.rememberMe.label}
                 </span>
               </label>
               <Link
-                to="/forgot-password"
+                to={loginData.links.forgotPassword}
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
               >
                 هل نسيت كلمة المرور؟
@@ -172,47 +114,42 @@ const LoginPage = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <span>جاري الدخول...</span>
+                <span>{loginData.buttons.submitting}</span>
               </div>
             ) : (
-              "دخول إلى الحساب"
+              loginData.buttons.submit
             )}
           </Button>
         </form>
 
-        {/* Divider */}
         <div className="px-8 my-2">
-          <Divider text="أو" className="text-gray-400" />
+          <Divider text={loginData.dividerText} className="text-gray-400" />
         </div>
 
-        {/* Social Login - زر Google محسّن */}
         <div className="px-8 pb-4">
           <SocialButton
             icon={
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-              </svg>
+              <div
+                dangerouslySetInnerHTML={{ __html: loginData.googleIconSvg }}
+                className="w-5 h-5"
+              />
             }
             onClick={handleGoogleLogin}
             disabled={isLoading}
             className="w-full h-11 rounded-xl border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-100 transition-all duration-200 text-gray-700 font-medium"
           >
-            التسجيل باستخدام Google
+            {loginData.buttons.google}
           </SocialButton>
         </div>
 
-        {/* Sign Up Link - محسن مع حدود */}
         <div className="px-8 pb-8 pt-4 text-center border-t border-gray-100 mt-2">
           <p className="text-sm text-gray-600">
-            ليس لديك حساب؟{" "}
+            {loginData.footer.noAccount}{" "}
             <Link
-              to="/register"
+              to={loginData.links.register}
               className="font-semibold text-indigo-600 hover:text-indigo-800 transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
             >
-              إنشاء حساب جديد
+              {loginData.footer.signUp}
             </Link>
           </p>
         </div>

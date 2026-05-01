@@ -1,152 +1,56 @@
-// src/pages/ForgotPasswordPage.jsx
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import InputField from '../components/ui/InputField';
 import Button from '../components/ui/Button';
+import { useForgotPasswordForm } from '../hooks/useForgotPasswordForm';
+import { forgotPasswordData } from '../data/forgotPasswordData';
 
-// SVG Icons
-
+// مكونات SVG الصغيرة - يمكن جعلها دالة ترجع JSX باستخدام dangerouslySetInnerHTML
+// لكن الأفضل إنشاء مكونات صغيرة JSX لسهولة الاستخدام ونظافة الكود
 const CheckIcon = () => (
-  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-  </svg>
+  <div dangerouslySetInnerHTML={{ __html: forgotPasswordData.checkIconSvg }} />
+);
+
+const ErrorIcon = () => (
+  <div dangerouslySetInnerHTML={{ __html: forgotPasswordData.errorIconSvg }} />
+);
+
+const Spinner = () => (
+  <div dangerouslySetInnerHTML={{ __html: forgotPasswordData.spinnerSvg }} />
 );
 
 const ForgotPasswordPage = () => {
-  const navigate = useNavigate();
-  const [step, setStep] = useState(1); // 1: email, 2: verification code
-  const [email, setEmail] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [countdown, setCountdown] = useState(0);
-  const [emailError, setEmailError] = useState('');
-
-  // محاكاة إرسال رمز التأكيد
-  const sendVerificationCode = async (email) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (email && email.includes('@')) {
-          console.log(`تم إرسال رمز التأكيد إلى ${email}: 123456`);
-          resolve({ success: true });
-        } else {
-          reject({ message: 'البريد الإلكتروني غير صالح' });
-        }
-      }, 1500);
-    });
-  };
-
-  // محاكاة التحقق من الرمز
-  const verifyCode = async (code) => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        if (code === '123456') {
-          resolve({ success: true });
-        } else {
-          reject({ message: 'رمز التأكيد غير صحيح' });
-        }
-      }, 1500);
-    });
-  };
-
-  const handleSendCode = async (e) => {
-    e.preventDefault();
-    if (!email) {
-      setEmailError('البريد الإلكتروني مطلوب');
-      return;
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError('البريد الإلكتروني غير صالح');
-      return;
-    }
-    setEmailError('');
-    setIsLoading(true);
-    setError('');
-    try {
-      await sendVerificationCode(email);
-      setSuccessMessage('تم إرسال رمز التأكيد إلى بريدك الإلكتروني');
-      setStep(2);
-      // بدء العد التنازلي 60 ثانية لإعادة الإرسال
-      setCountdown(60);
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch (err) {
-      setError(err.message || 'حدث خطأ أثناء إرسال الرمز');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleVerifyCode = async (e) => {
-    e.preventDefault();
-    if (!verificationCode) {
-      setError('الرجاء إدخال رمز التأكيد');
-      return;
-    }
-    setIsLoading(true);
-    setError('');
-    try {
-      await verifyCode(verificationCode);
-      setSuccessMessage('تم التحقق بنجاح! سيتم توجيهك لتعيين كلمة مرور جديدة');
-      setTimeout(() => {
-        navigate('/reset-password', { state: { email, code: verificationCode } });
-      }, 1500);
-    } catch (err) {
-      setError(err.message || 'رمز التأكيد غير صحيح');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleResendCode = async () => {
-    if (countdown > 0) return;
-    setIsLoading(true);
-    setError('');
-    try {
-      await sendVerificationCode(email);
-      setSuccessMessage('تم إعادة إرسال الرمز');
-      setCountdown(60);
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch (err) {
-      setError(err.message || 'فشل إعادة إرسال الرمز');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const {
+    step,
+    email,
+    setEmail,
+    verificationCode,
+    setVerificationCode,
+    isLoading,
+    error,
+    successMessage,
+    countdown,
+    emailError,
+    handleSendCode,
+    handleVerifyCode,
+    handleResendCode,
+  } = useForgotPasswordForm();
 
   return (
     <div className="min-h-screen flex items-center justify-center p-5 md:p-8 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
       <div className="w-full max-w-[448px] bg-white rounded-3xl shadow-2xl shadow-indigo-100/50 overflow-hidden transition-all duration-300 hover:shadow-indigo-200/40">
-        {/* Header with icon */}
+        {/* Header */}
         <div className="px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white to-indigo-50/20">
           <div className="flex justify-center mb-5">
-             <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl mx-auto mb-4 my-20 flex items-center justify-center shadow-md shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-300">
-         <img src="/src/assets/logo.png" alt="EduFuture AI Logo" className="w-12 h-12" />
-        </div>
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl mx-auto mb-4 my-20 flex items-center justify-center shadow-md shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-300">
+              <img src={forgotPasswordData.logo.src} alt={forgotPasswordData.logo.alt} className="w-12 h-12" />
+            </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            استعادة كلمة المرور
+            {forgotPasswordData.title}
           </h1>
           <p className="text-gray-500 text-sm mt-2 font-medium">
-            {step === 1
-              ? 'أدخل بريدك الإلكتروني وسنرسل لك رمز التحقق'
-              : 'أدخل رمز التأكيد المرسل إلى بريدك'}
+            {step === 1 ? forgotPasswordData.step1Subtitle : forgotPasswordData.step2Subtitle}
           </p>
         </div>
 
@@ -155,9 +59,7 @@ const ForgotPasswordPage = () => {
           <form onSubmit={handleSendCode} className="px-8 pt-6 pb-8 space-y-6">
             {error && (
               <div className="flex items-center gap-3 bg-red-50 text-red-700 p-3 rounded-xl text-sm border-r-4 border-red-500 shadow-sm">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <ErrorIcon />
                 <span>{error}</span>
               </div>
             )}
@@ -168,15 +70,15 @@ const ForgotPasswordPage = () => {
               </div>
             )}
             <InputField
-              id="email"
-              label="البريد الإلكتروني"
-              type="email"
-              placeholder="name@example.com"
+              id={forgotPasswordData.step1.emailField.id}
+              label={forgotPasswordData.step1.emailField.label}
+              type={forgotPasswordData.step1.emailField.type}
+              placeholder={forgotPasswordData.step1.emailField.placeholder}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               error={emailError}
               disabled={isLoading}
-              autoComplete="email"
+              autoComplete={forgotPasswordData.step1.emailField.autoComplete}
               className="rounded-xl border-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
             />
             <Button
@@ -188,14 +90,11 @@ const ForgotPasswordPage = () => {
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>جاري الإرسال...</span>
+                  <Spinner />
+                  <span>{forgotPasswordData.step1.submittingButton}</span>
                 </div>
               ) : (
-                'إرسال رمز التحقق'
+                forgotPasswordData.step1.submitButton
               )}
             </Button>
           </form>
@@ -206,9 +105,7 @@ const ForgotPasswordPage = () => {
           <form onSubmit={handleVerifyCode} className="px-8 pt-6 pb-8 space-y-6">
             {error && (
               <div className="flex items-center gap-3 bg-red-50 text-red-700 p-3 rounded-xl text-sm border-r-4 border-red-500 shadow-sm">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <ErrorIcon />
                 <span>{error}</span>
               </div>
             )}
@@ -219,10 +116,10 @@ const ForgotPasswordPage = () => {
               </div>
             )}
             <InputField
-              id="code"
-              label="رمز التأكيد"
-              type="text"
-              placeholder="أدخل الرقم المكون من 6 أرقام"
+              id={forgotPasswordData.step2.codeField.id}
+              label={forgotPasswordData.step2.codeField.label}
+              type={forgotPasswordData.step2.codeField.type}
+              placeholder={forgotPasswordData.step2.codeField.placeholder}
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
               disabled={isLoading}
@@ -237,7 +134,9 @@ const ForgotPasswordPage = () => {
                   countdown > 0 ? 'text-gray-400 cursor-not-allowed' : 'text-indigo-600 hover:text-indigo-800'
                 }`}
               >
-                {countdown > 0 ? `إعادة إرسال الرمز بعد ${countdown} ثانية` : 'إعادة إرسال الرمز'}
+                {countdown > 0
+                  ? forgotPasswordData.step2.resendButtonWait(countdown)
+                  : forgotPasswordData.step2.resendButton}
               </button>
             </div>
             <Button
@@ -249,14 +148,11 @@ const ForgotPasswordPage = () => {
             >
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  <span>جاري التحقق...</span>
+                  <Spinner />
+                  <span>{forgotPasswordData.step2.verifyingButton}</span>
                 </div>
               ) : (
-                'تحقق من الرمز'
+                forgotPasswordData.step2.verifyButton
               )}
             </Button>
           </form>
@@ -265,12 +161,12 @@ const ForgotPasswordPage = () => {
         {/* Links back to login */}
         <div className="px-8 pb-8 pt-2 text-center border-t border-gray-100 mt-2">
           <p className="text-sm text-gray-600">
-            تذكرت كلمة المرور؟{' '}
+            {forgotPasswordData.footer.rememberPassword}{' '}
             <Link
-              to="/login"
+              to={forgotPasswordData.footer.loginLink}
               className="font-semibold text-indigo-600 hover:text-indigo-800 transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
             >
-              تسجيل الدخول
+              {forgotPasswordData.footer.loginText}
             </Link>
           </p>
         </div>
