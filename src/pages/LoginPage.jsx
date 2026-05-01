@@ -1,58 +1,56 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import Button from '../components/ui/Button';
-import InputField from '../components/ui/InputField';
-import PasswordInput from '../components/ui/PasswordInput';
-import Divider from '../components/ui/Divider';
-import SocialButton from '../components/ui/SocialButton';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import Button from "../components/ui/Button";
+import InputField from "../components/ui/InputField";
+import PasswordInput from "../components/ui/PasswordInput";
+import Divider from "../components/ui/Divider";
+import SocialButton from "../components/ui/SocialButton";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
     rememberMe: false,
   });
   const [errors, setErrors] = useState({});
-  const [generalError, setGeneralError] = useState('');
+  const [generalError, setGeneralError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [id]: type === 'checkbox' ? checked : value,
+      [id]: type === "checkbox" ? checked : value,
     }));
-    // مسح الخطأ عند البدء في الكتابة
     if (errors[id]) {
-      setErrors((prev) => ({ ...prev, [id]: '' }));
+      setErrors((prev) => ({ ...prev, [id]: "" }));
     }
-    if (generalError) setGeneralError('');
+    if (generalError) setGeneralError("");
   };
 
   const validate = () => {
     const newErrors = {};
     if (!formData.email) {
-      newErrors.email = 'البريد الإلكتروني مطلوب';
+      newErrors.email = "البريد الإلكتروني مطلوب";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'البريد الإلكتروني غير صالح';
+      newErrors.email = "البريد الإلكتروني غير صالح";
     }
     if (!formData.password) {
-      newErrors.password = 'كلمة المرور مطلوبة';
+      newErrors.password = "كلمة المرور مطلوبة";
     } else if (formData.password.length < 6) {
-      newErrors.password = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+      newErrors.password = "كلمة المرور يجب أن تكون 6 أحرف على الأقل";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // محاكاة استدعاء API لتسجيل الدخول
   const loginApiCall = async (email, password, rememberMe) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (email === 'test@example.com' && password === '123456') {
+        if (email === "test@example.com" && password === "123456") {
           resolve({ success: true });
         } else {
-          reject({ message: 'البريد الإلكتروني أو كلمة المرور غير صحيحة' });
+          reject({ message: "البريد الإلكتروني أو كلمة المرور غير صحيحة" });
         }
       }, 1500);
     });
@@ -61,51 +59,50 @@ const LoginPage = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-
     setIsLoading(true);
-    setGeneralError('');
-
+    setGeneralError("");
     try {
       await loginApiCall(formData.email, formData.password, formData.rememberMe);
-      console.log('بيانات تسجيل الدخول:', formData);
-      alert('تم تسجيل الدخول بنجاح (محاكاة)');
-      // هنا يمكنك إعادة التوجيه إلى لوحة التحكم
+      console.log("بيانات تسجيل الدخول:", formData);
+      alert("تم تسجيل الدخول بنجاح (محاكاة)");
     } catch (error) {
-      setGeneralError(error.message || 'حدث خطأ أثناء تسجيل الدخول، حاول مرة أخرى');
+      setGeneralError(error.message || "حدث خطأ أثناء تسجيل الدخول، حاول مرة أخرى");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleGoogleLogin = () => {
-    console.log('تسجيل الدخول عبر Google');
-    // إضافة منطق OAuth
+    console.log("تسجيل الدخول عبر Google");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 bg-gradient-to-br from-background via-surface to-background">
-      <div className="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        {/* Header مع أيقونة وشعار */}
-        <div className="px-8 pt-8 pb-4 text-center border-b border-outline-variant">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center shadow-md">
-              <svg className="w-10 h-10 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-              </svg>
-            </div>
+    <div className="min-h-screen flex items-center justify-center p-5 md:p-8 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+      <div className="w-full max-w-[448px] bg-white rounded-3xl shadow-2xl shadow-indigo-100/50 overflow-hidden transition-all duration-300 hover:shadow-indigo-200/40">
+        {/* Header مع شعار ونص ترحيبي - تصميم أنيق مع مسافات محسنة */}
+        <div className="px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white to-indigo-50/20">
+          <div className="flex justify-center mb-5">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl mx-auto mb-4 my-20 flex items-center justify-center shadow-md shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-300">
+         <img src="/src/assets/logo.png" alt="EduFuture AI Logo" className="w-10 h-10" />
+        </div>
           </div>
-          <h1 className="font-headline-md text-headline-md text-primary mb-1">EduFuture AI</h1>
-          <p className="font-body-md text-body-md text-on-surface-variant">
-            مرحباً بك مجدداً! يرجى تسجيل الدخول للمتابعة.
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+            EduFuture AI
+          </h1>
+          <p className="text-gray-500 text-sm mt-2 font-medium">
+            مرحباً بعودتك! سجل الدخول للوصول إلى منصتك التعليمية.
           </p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleLogin} className="p-8 space-y-6">
-          {/* رسالة خطأ عامة */}
+        <form onSubmit={handleLogin} className="px-8 pt-6 pb-2 space-y-6">
+          {/* رسالة خطأ عامة محسنة */}
           {generalError && (
-            <div className="bg-error-container text-on-error-container p-3 rounded-lg text-sm text-center border-r-4 border-error">
-              {generalError}
+            <div className="flex items-center gap-3 bg-red-50 text-red-700 p-3 rounded-xl text-sm border-r-4 border-red-500 shadow-sm">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{generalError}</span>
             </div>
           )}
 
@@ -113,44 +110,44 @@ const LoginPage = () => {
             id="email"
             label="البريد الإلكتروني"
             type="email"
-            placeholder="example@domain.com"
+            placeholder="name@company.com"
             value={formData.email}
             onChange={handleChange}
             error={errors.email}
             disabled={isLoading}
             required
             autoComplete="email"
-            className="transition-all duration-200 focus:scale-[1.02]"
+            className="transition-all duration-200 focus:scale-[1.01]"
           />
 
           <div className="space-y-2">
             <PasswordInput
               id="password"
               label="كلمة المرور"
-              placeholder="••••••"
+              placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
               error={errors.password}
               disabled={isLoading}
               autoComplete="current-password"
             />
-            <div className="flex justify-between items-center mt-1">
+            <div className="flex justify-between items-center mt-2">
               <label className="flex items-center gap-2 cursor-pointer group">
                 <input
                   type="checkbox"
                   id="rememberMe"
                   checked={formData.rememberMe}
                   onChange={handleChange}
-                  className="w-4 h-4 rounded border-outline bg-surface text-primary focus:ring-2 focus:ring-primary transition-all"
+                  className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-2 transition-all"
                   disabled={isLoading}
                 />
-                <span className="font-body-sm text-body-sm text-on-surface-variant group-hover:text-primary transition-colors">
+                <span className="text-sm text-gray-600 group-hover:text-indigo-600 transition-colors">
                   تذكرني
                 </span>
               </label>
               <Link
                 to="/forgot-password"
-                className="font-label-sm text-label-sm text-primary hover:text-primary-container transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-primary rounded"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
               >
                 هل نسيت كلمة المرور؟
               </Link>
@@ -162,28 +159,33 @@ const LoginPage = () => {
             variant="primary"
             fullWidth
             disabled={isLoading}
-            className="relative transition-all duration-200 transform active:scale-95"
+            className="relative h-12 rounded-xl shadow-md shadow-indigo-200 hover:shadow-indigo-300 transition-all duration-200 transform active:scale-95 font-semibold text-base"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
-                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg
+                  className="animate-spin h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
                 <span>جاري الدخول...</span>
               </div>
             ) : (
-              'دخول'
+              "دخول إلى الحساب"
             )}
           </Button>
         </form>
 
-        {/* Divider with text */}
-        <div className="px-8">
-          <Divider text="أو" className="text-outline" />
+        {/* Divider */}
+        <div className="px-8 my-2">
+          <Divider text="أو" className="text-gray-400" />
         </div>
 
-        {/* Social Login */}
+        {/* Social Login - زر Google محسّن */}
         <div className="px-8 pb-4">
           <SocialButton
             icon={
@@ -196,19 +198,19 @@ const LoginPage = () => {
             }
             onClick={handleGoogleLogin}
             disabled={isLoading}
-            className="w-full transition-all duration-200 hover:shadow-md hover:scale-[1.01] active:scale-100"
+            className="w-full h-11 rounded-xl border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-100 transition-all duration-200 text-gray-700 font-medium"
           >
             التسجيل باستخدام Google
           </SocialButton>
         </div>
 
-        {/* Sign Up Link */}
-        <div className="px-8 pb-8 pt-2 text-center border-t border-outline-variant mt-4">
-          <p className="font-body-md text-body-md text-on-surface-variant">
-            ليس لديك حساب؟{' '}
+        {/* Sign Up Link - محسن مع حدود */}
+        <div className="px-8 pb-8 pt-4 text-center border-t border-gray-100 mt-2">
+          <p className="text-sm text-gray-600">
+            ليس لديك حساب؟{" "}
             <Link
               to="/register"
-              className="font-label-sm text-label-sm text-primary hover:text-primary-container transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-primary rounded"
+              className="font-semibold text-indigo-600 hover:text-indigo-800 transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
             >
               إنشاء حساب جديد
             </Link>

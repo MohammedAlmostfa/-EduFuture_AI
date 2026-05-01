@@ -18,9 +18,8 @@ const RegisterPage = () => {
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0); // 0: weak, 1: medium, 2: strong
+  const [passwordStrength, setPasswordStrength] = useState(0);
 
-  // حساب قوة كلمة المرور
   const evaluatePasswordStrength = (password) => {
     let strength = 0;
     if (password.length >= 8) strength++;
@@ -34,63 +33,39 @@ const RegisterPage = () => {
     const { id, value, type, checked } = e.target;
     const newValue = type === 'checkbox' ? checked : value;
     setFormData((prev) => ({ ...prev, [id]: newValue }));
-
-    // تحديث قوة كلمة المرور عند كتابة كلمة المرور
     if (id === 'password') {
       setPasswordStrength(evaluatePasswordStrength(newValue));
     }
-
-    // مسح الخطأ عند الكتابة
     if (errors[id]) setErrors((prev) => ({ ...prev, [id]: '' }));
     if (generalError) setGeneralError('');
   };
 
   const validate = () => {
     const newErrors = {};
+    if (!formData.fullName.trim()) newErrors.fullName = 'الاسم الكامل مطلوب';
+    else if (formData.fullName.trim().length < 3) newErrors.fullName = 'الاسم يجب أن يكون 3 أحرف على الأقل';
 
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'الاسم الكامل مطلوب';
-    } else if (formData.fullName.trim().length < 3) {
-      newErrors.fullName = 'الاسم يجب أن يكون 3 أحرف على الأقل';
-    }
+    if (!formData.email) newErrors.email = 'البريد الإلكتروني مطلوب';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'البريد الإلكتروني غير صالح';
 
-    if (!formData.email) {
-      newErrors.email = 'البريد الإلكتروني مطلوب';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'البريد الإلكتروني غير صالح';
-    }
+    if (!formData.password) newErrors.password = 'كلمة المرور مطلوبة';
+    else if (formData.password.length < 6) newErrors.password = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+    else if (passwordStrength < 2) newErrors.password = 'كلمة المرور ضعيفة، استخدم حروف كبيرة وأرقام ورموز';
 
-    if (!formData.password) {
-      newErrors.password = 'كلمة المرور مطلوبة';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
-    } else if (passwordStrength < 2) {
-      newErrors.password = 'كلمة المرور ضعيفة، استخدم حروف كبيرة وأرقام ورموز';
-    }
+    if (!formData.confirmPassword) newErrors.confirmPassword = 'تأكيد كلمة المرور مطلوب';
+    else if (formData.confirmPassword !== formData.password) newErrors.confirmPassword = 'كلمة المرور غير متطابقة';
 
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'تأكيد كلمة المرور مطلوب';
-    } else if (formData.confirmPassword !== formData.password) {
-      newErrors.confirmPassword = 'كلمة المرور غير متطابقة';
-    }
-
-    if (!formData.acceptTerms) {
-      newErrors.acceptTerms = 'يجب الموافقة على الشروط والأحكام';
-    }
+    if (!formData.acceptTerms) newErrors.acceptTerms = 'يجب الموافقة على الشروط والأحكام';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // محاكاة API للتسجيل
   const registerApiCall = async (userData) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
-        if (userData.email === 'existing@example.com') {
-          reject({ message: 'البريد الإلكتروني مسجل مسبقاً' });
-        } else {
-          resolve({ success: true });
-        }
+        if (userData.email === 'existing@example.com') reject({ message: 'البريد الإلكتروني مسجل مسبقاً' });
+        else resolve({ success: true });
       }, 1500);
     });
   };
@@ -98,10 +73,8 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-
     setIsLoading(true);
     setGeneralError('');
-
     try {
       await registerApiCall(formData);
       console.log('بيانات التسجيل:', formData);
@@ -118,12 +91,11 @@ const RegisterPage = () => {
     console.log('التسجيل عبر Google');
   };
 
-  // ألوان شريط قوة كلمة المرور
   const strengthColors = {
-    0: 'bg-error',
-    1: 'bg-warning',
-    2: 'bg-info',
-    3: 'bg-success',
+    0: 'bg-red-500',
+    1: 'bg-yellow-500',
+    2: 'bg-blue-500',
+    3: 'bg-green-500',
   };
   const strengthText = {
     0: 'ضعيفة',
@@ -133,28 +105,30 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 bg-gradient-to-br from-background via-surface to-background">
-      <div className="w-full max-w-md bg-surface-container-lowest rounded-2xl shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        {/* Header with icon */}
-        <div className="px-8 pt-8 pb-4 text-center border-b border-outline-variant">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 bg-primary-container rounded-full flex items-center justify-center shadow-md">
-              <svg className="w-10 h-10 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z" />
-              </svg>
-            </div>
+    <div className="min-h-screen flex items-center justify-center p-5 md:p-8 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30">
+      <div className="w-full max-w-[448px] bg-white rounded-3xl shadow-2xl shadow-indigo-100/50 overflow-hidden transition-all duration-300 hover:shadow-indigo-200/40">
+        {/* Header - نفس تصميم LoginPage */}
+        <div className="px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white to-indigo-50/20">
+          <div className="flex justify-center mb-5">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl mx-auto mb-4 my-20 flex items-center justify-center shadow-md shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-300">
+         <img src="/src/assets/logo.png" alt="EduFuture AI Logo" className="w-10 h-10" />
+        </div>
           </div>
-          <span className="font-headline-md text-headline-md text-primary mb-1 block">EduFuture AI</span>
-          <h1 className="font-title-sm text-title-sm text-on-surface">إنشاء حساب جديد</h1>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-1">انضم إلينا وابدأ رحلة التعلم الذكي</p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+            EduFuture AI
+          </h1>
+          <h2 className="text-xl font-semibold text-gray-700 mt-2">إنشاء حساب جديد</h2>
+          <p className="text-gray-500 text-sm mt-1 font-medium">انضم إلينا وابدأ رحلة التعلم الذكي</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-8 space-y-5">
-          {/* رسالة خطأ عامة */}
+        <form onSubmit={handleSubmit} className="px-8 pt-6 pb-2 space-y-5">
           {generalError && (
-            <div className="bg-error-container text-on-error-container p-3 rounded-lg text-sm text-center border-r-4 border-error">
-              {generalError}
+            <div className="flex items-center gap-3 bg-red-50 text-red-700 p-3 rounded-xl text-sm border-r-4 border-red-500 shadow-sm">
+              <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{generalError}</span>
             </div>
           )}
 
@@ -168,20 +142,20 @@ const RegisterPage = () => {
             error={errors.fullName}
             disabled={isLoading}
             autoComplete="name"
-            className="transition-all duration-200 focus:scale-[1.02]"
+            className="transition-all duration-200 focus:scale-[1.01]"
           />
 
           <InputField
             id="email"
             label="البريد الإلكتروني"
             type="email"
-            placeholder="name@example.com"
+            placeholder="name@company.com"
             value={formData.email}
             onChange={handleChange}
             error={errors.email}
             disabled={isLoading}
             autoComplete="email"
-            className="ltr transition-all duration-200 focus:scale-[1.02]"
+            className="ltr transition-all duration-200 focus:scale-[1.01]"
           />
 
           <div className="space-y-1">
@@ -194,20 +168,18 @@ const RegisterPage = () => {
               error={errors.password}
               disabled={isLoading}
               autoComplete="new-password"
-              startIcon={<span className="material-symbols-outlined text-outline">lock</span>}
               showToggle={true}
             />
-            {/* شريط قوة كلمة المرور (يظهر فقط إذا كانت الكلمة غير فارغة) */}
             {formData.password && (
-              <div className="mt-1">
-                <div className="flex justify-between text-xs text-on-surface-variant mb-1">
+              <div className="mt-2">
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
                   <span>قوة كلمة المرور:</span>
                   <span className={`font-medium ${
-                    passwordStrength === 0 ? 'text-error' :
-                    passwordStrength === 1 ? 'text-warning' : 'text-success'
+                    passwordStrength === 0 ? 'text-red-600' :
+                    passwordStrength === 1 ? 'text-yellow-600' : 'text-green-600'
                   }`}>{strengthText[passwordStrength]}</span>
                 </div>
-                <div className="w-full h-1.5 bg-outline-variant rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                   <div
                     className={`h-full ${strengthColors[passwordStrength]} transition-all duration-300 rounded-full`}
                     style={{ width: `${(passwordStrength / 3) * 100}%` }}
@@ -226,33 +198,32 @@ const RegisterPage = () => {
             error={errors.confirmPassword}
             disabled={isLoading}
             autoComplete="new-password"
-            startIcon={<span className="material-symbols-outlined text-outline">lock</span>}
             showToggle={true}
           />
 
-          {/* Terms and Conditions Checkbox */}
-          <div className="flex items-start gap-2">
+          {/* Terms Checkbox - محسن */}
+          <div className="flex items-start gap-3 mt-2">
             <input
               type="checkbox"
               id="acceptTerms"
               checked={formData.acceptTerms}
               onChange={handleChange}
               disabled={isLoading}
-              className="mt-1 w-4 h-4 rounded border-outline bg-surface text-primary focus:ring-2 focus:ring-primary transition-all"
+              className="mt-0.5 w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-2 transition-all"
             />
-            <label htmlFor="acceptTerms" className="text-sm text-on-surface-variant">
+            <label htmlFor="acceptTerms" className="text-sm text-gray-600 leading-tight">
               أوافق على{' '}
-              <Link to="/terms" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary rounded">
+              <Link to="/terms" className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
                 الشروط والأحكام
               </Link>{' '}
               و{' '}
-              <Link to="/privacy" className="text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-primary rounded">
+              <Link to="/privacy" className="text-indigo-600 hover:text-indigo-800 hover:underline font-medium">
                 سياسة الخصوصية
               </Link>
             </label>
           </div>
           {errors.acceptTerms && (
-            <p className="text-error text-sm mt-1">{errors.acceptTerms}</p>
+            <p className="text-red-600 text-xs mt-1">{errors.acceptTerms}</p>
           )}
 
           <Button
@@ -260,7 +231,7 @@ const RegisterPage = () => {
             variant="primary"
             fullWidth
             disabled={isLoading}
-            className="relative transition-all duration-200 transform active:scale-95"
+            className="relative h-12 rounded-xl shadow-md shadow-indigo-200 hover:shadow-indigo-300 transition-all duration-200 transform active:scale-95 font-semibold text-base"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">
@@ -276,7 +247,7 @@ const RegisterPage = () => {
           </Button>
         </form>
 
-        <Divider text="أو" className="mx-8 text-outline" />
+        <Divider text="أو" className="mx-8 my-2 text-gray-400" />
 
         <div className="px-8 pb-4">
           <SocialButton
@@ -290,19 +261,19 @@ const RegisterPage = () => {
             }
             onClick={handleGoogleRegister}
             disabled={isLoading}
-            className="w-full transition-all duration-200 hover:shadow-md hover:scale-[1.01] active:scale-100"
+            className="w-full h-11 rounded-xl border-gray-200 shadow-sm hover:shadow-md hover:scale-[1.01] active:scale-100 transition-all duration-200 text-gray-700 font-medium"
           >
             التسجيل باستخدام Google
           </SocialButton>
         </div>
 
         {/* Login Link */}
-        <div className="px-8 pb-8 pt-2 text-center border-t border-outline-variant mt-2">
-          <p className="font-body-md text-body-md text-on-surface-variant">
+        <div className="px-8 pb-8 pt-4 text-center border-t border-gray-100 mt-2">
+          <p className="text-sm text-gray-600">
             لديك حساب بالفعل؟{' '}
             <Link
               to="/login"
-              className="text-primary font-label-sm text-label-sm hover:underline transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary rounded"
+              className="font-semibold text-indigo-600 hover:text-indigo-800 transition-all duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded"
             >
               تسجيل الدخول
             </Link>

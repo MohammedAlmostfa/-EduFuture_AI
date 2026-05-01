@@ -1,7 +1,7 @@
 // src/components/ui/ConfirmDialog.jsx
 import React, { useEffect } from 'react';
 
-const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel }) => {
+const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel, confirmText = 'حذف', cancelText = 'إلغاء' }) => {
   // منع تمرير الخلفية
   useEffect(() => {
     if (isOpen) {
@@ -27,7 +27,7 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel }) => {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all duration-300"
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
@@ -36,35 +36,35 @@ const ConfirmDialog = ({ isOpen, title, message, onConfirm, onCancel }) => {
       aria-labelledby="confirm-dialog-title"
       aria-describedby="confirm-dialog-message"
     >
-      <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 scale-100">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden transform transition-all duration-300 scale-100 border border-gray-100">
         {/* Header */}
-        <div className="p-5 pb-2">
-          <h3 id="confirm-dialog-title" className="font-title-sm text-title-sm text-on-surface">
+        <div className="p-6 pb-3">
+          <h3 id="confirm-dialog-title" className="text-lg font-semibold text-gray-800">
             {title}
           </h3>
         </div>
 
         {/* Message */}
-        <div className="px-5 pb-5">
-          <p id="confirm-dialog-message" className="text-on-surface-variant">
+        <div className="px-6 pb-4">
+          <p id="confirm-dialog-message" className="text-sm text-gray-600 leading-relaxed">
             {message}
           </p>
         </div>
 
         {/* Actions */}
-        <div className="flex justify-end gap-3 p-5 pt-0">
+        <div className="flex justify-end gap-3 p-6 pt-2">
           <button
             onClick={onCancel}
-            className="px-4 py-2 rounded-lg border border-outline text-on-surface-variant hover:bg-surface-container transition"
+            className="px-4 py-2 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-medium"
             autoFocus
           >
-            إلغاء
+            {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className="px-4 py-2 rounded-lg bg-error text-on-error hover:opacity-90 transition active:scale-95"
+            className="px-4 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-all duration-200 active:scale-95 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 text-sm font-medium"
           >
-            حذف
+            {confirmText}
           </button>
         </div>
       </div>

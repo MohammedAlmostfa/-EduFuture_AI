@@ -1,24 +1,49 @@
 // src/components/ui/Toast.jsx
 import React, { useEffect } from 'react';
 
+// SVG Icons
+const SuccessIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const ErrorIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const InfoIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+  </svg>
+);
+
 const toastTypeConfig = {
   success: {
-    icon: 'check_circle',
-    bgClass: 'bg-[#D1FAE5]',
-    textClass: 'text-[#065F46]',
-    borderClass: 'border-[#065F46]/20',
+    icon: <SuccessIcon />,
+    bgClass: 'bg-green-50',
+    textClass: 'text-green-700',
+    borderClass: 'border-green-500',
   },
   error: {
-    icon: 'error',
-    bgClass: 'bg-[#FEE2E2]',
-    textClass: 'text-[#991B1B]',
-    borderClass: 'border-[#991B1B]/20',
+    icon: <ErrorIcon />,
+    bgClass: 'bg-red-50',
+    textClass: 'text-red-700',
+    borderClass: 'border-red-500',
   },
   info: {
-    icon: 'info',
-    bgClass: 'bg-[#DBEAFE]',
-    textClass: 'text-[#1E40AF]',
-    borderClass: 'border-[#1E40AF]/20',
+    icon: <InfoIcon />,
+    bgClass: 'bg-indigo-50',
+    textClass: 'text-indigo-700',
+    borderClass: 'border-indigo-500',
   },
 };
 
@@ -41,14 +66,14 @@ const Toast = ({ message, type = 'success', onClose, duration = 3000 }) => {
       <div
         className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border-r-4 ${config.bgClass} ${config.textClass} ${config.borderClass} max-w-[90vw] sm:max-w-sm`}
       >
-        <span className="material-symbols-outlined">{config.icon}</span>
+        <span className="flex items-center">{config.icon}</span>
         <p className="text-sm font-medium">{message}</p>
         <button
           onClick={onClose}
-          className="mr-2 hover:opacity-70 transition"
+          className="mr-2 hover:opacity-70 transition-all active:scale-90"
           aria-label="إغلاق الإشعار"
         >
-          <span className="material-symbols-outlined text-base">close</span>
+          <CloseIcon />
         </button>
       </div>
     </div>
