@@ -137,7 +137,7 @@ const ForgotPasswordPage = () => {
         <div className="px-8 pt-10 pb-6 text-center bg-gradient-to-b from-white to-indigo-50/20">
           <div className="flex justify-center mb-5">
              <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl mx-auto mb-4 my-20 flex items-center justify-center shadow-md shadow-indigo-200 rotate-3 transition-transform hover:rotate-0 duration-300">
-         <img src="/src/assets/logo.png" alt="EduFuture AI Logo" className="w-10 h-10" />
+         <img src="/src/assets/logo.png" alt="EduFuture AI Logo" className="w-12 h-12" />
         </div>
           </div>
           <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">

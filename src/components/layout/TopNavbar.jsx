@@ -21,15 +21,23 @@ const TopNavbar = ({ onLogout }) => {
       {/* أزرار التحكم */}
       <div className="flex gap-2 items-center">
         {/* زر الحساب الشخصي */}
-        <button 
-          className="relative p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-indigo-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-          aria-label="الحساب الشخصي"
-          title="الحساب الشخصي"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </button>
+     <Link
+  to="/profile"
+  className="relative inline-flex p-2 text-gray-500 hover:text-indigo-600 rounded-full hover:bg-indigo-50 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+  aria-label="الحساب الشخصي"
+  title="الحساب الشخصي"
+>
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+    />
+  </svg>
+</Link>
+       
+     
 
         {/* زر تسجيل الخروج */}
         <button 
